@@ -1,5 +1,5 @@
 contract rainbowCoin {
-	mapping (address => mapping (uint => uint)) balances;
+	mapping (address => mapping (uint => uint)) public balances;
 	function rainbowCoin() {
 		balances[msg.sender][0] = 10000; ///red coin
 		balances[msg.sender][1] = 10000; ///orange coin
