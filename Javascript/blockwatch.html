@@ -1,0 +1,62 @@
+<html>
+<head>
+  <title>JavaScript API</title>
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js">
+  
+<script type="text/javascript">
+
+window.onload = function(){
+  var version = web3.version.client;
+  console.log(version);
+
+  function printvalues(){
+    var coinbase = web3.eth.coinbase;
+    document.getElementById('coinbase').innerText = coinbase;
+    var balance = web3.eth.getBalance(coinbase);
+    document.getElementById('balance').innerText = balance;
+  }
+
+  printvalues();
+
+  var filter = web3.eth.filter('latest');
+  filter.watch(function(error, result){
+    if (error){ console.log(error); }
+    else { 
+      console.log(result);
+      printvalues();
+    } 
+  });
+};
+
+
+///Insert your contract address var here:
+ 
+
+///Second web3.eth.watch code to monitor block number
+  
+
+</script>
+
+</head>
+
+<body>
+
+  <div class="header">
+    <h3>JavaScript API</h3>
+  </div>
+
+  <div class="jumbotron">
+    <h5>Coinbase Address: <strong id="coinbase"> </strong></h5>
+    <h5>Balance: <strong id="balance"> </strong></h5>
+    <h5>Latest Block Number: <strong id="latestBlock"></strong></h5>
+    <h5>Latest Block Timestamp: <strong id="latestBlockTimestamp"></strong></h5>
+    <h5>Latest Block Hash: <strong id="latestBlockHash"></strong></h5>
+    <h5>Contract String: <strong id="contractString"></strong></h5>
+    <h5>Favourite Python: <strong id="favouritePython"></strong></h5>
+    <br>
+  </div>
+
+</body>
+
+</html>
