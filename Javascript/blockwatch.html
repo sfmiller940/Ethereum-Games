@@ -10,32 +10,51 @@ window.onload = function(){
   var version = web3.version.client;
   console.log(version);
 
+  var contractAddress = "0x5d45f4472d9af632b1828b71f86e61750762b81a";
+
+  function timeConverter(UNIX_timestamp){
+    var a = new Date(UNIX_timestamp * 1000);
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var year = a.getFullYear();
+    var month = months[a.getMonth()];
+    var date = a.getDate();
+    var hour = a.getHours();
+    var min = a.getMinutes();
+    var sec = a.getSeconds();
+    var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+    return time;
+  }
+
   function printvalues(){
     var coinbase = web3.eth.coinbase;
     document.getElementById('coinbase').innerText = coinbase;
     var balance = web3.eth.getBalance(coinbase);
     document.getElementById('balance').innerText = balance;
+      var blockNumber = web3.eth.blockNumber;
+      document.getElementById('latestBlock').innerText = blockNumber;
+      var hash = web3.eth.getBlock(blockNumber).hash;
+      document.getElementById('latestBlockHash').innerText = hash;
+      var timeStamp = web3.eth.getBlock(blockNumber).timestamp;
+      document.getElementById('latestBlockTimestamp').innerText = Date(timeStamp);
+      var contractDate = timeConverter( web3.toDecimal( web3.eth.getStorageAt(contractAddress, 1) ) )
+      document.getElementById('contractDate').innerText = contractDate;
+      document.getElementById('contractAddress').innerText = contractAddress;
+
   }
 
-  printvalues();
-
-  var filter = web3.eth.filter('latest');
-  filter.watch(function(error, result){
+  var filter_latest = web3.eth.filter('latest');
+  filter_latest.watch(function(error, result){
     if (error){ console.log(error); }
     else { 
       console.log(result);
       printvalues();
     } 
   });
+
+  printvalues();
+
 };
-
-
-///Insert your contract address var here:
- 
-
-///Second web3.eth.watch code to monitor block number
   
-
 </script>
 
 </head>
@@ -52,8 +71,8 @@ window.onload = function(){
     <h5>Latest Block Number: <strong id="latestBlock"></strong></h5>
     <h5>Latest Block Timestamp: <strong id="latestBlockTimestamp"></strong></h5>
     <h5>Latest Block Hash: <strong id="latestBlockHash"></strong></h5>
-    <h5>Contract String: <strong id="contractString"></strong></h5>
-    <h5>Favourite Python: <strong id="favouritePython"></strong></h5>
+    <h5>Contract Address: <strong id="contractAddress"></strong></h5>
+    <h5>Contract Date: <strong id="contractDate"></strong></h5>
     <br>
   </div>
 
