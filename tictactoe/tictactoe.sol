@@ -13,14 +13,14 @@ Contract tictactoe{
 	mapping (uint => Game) games;
 
 	function newGame(uint deadline, bytes32 gameState){
-        gameID = numGames++; // campaignID is return variable
-        Game g = games[gameID]; // assigns reference
-        g.player1 = msg.sender;
-        g.wager = msg.amount;
-        g.deadline = block.number + deadline;
-        if( is_first(gameState) ){
-        	g.gameState = gameState;
-        }
+	        gameID = numGames++; // campaignID is return variable
+	        Game g = games[gameID]; // assigns reference
+	        g.player1 = msg.sender;
+	        g.wager = msg.amount;
+	        g.deadline = block.number + deadline;
+	        if( is_first(gameState) ){
+	        	g.gameState = gameState;
+	        }
 	}
 
 	function is_first(bytes32 gameState) private{
