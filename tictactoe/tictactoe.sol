@@ -12,18 +12,33 @@ Contract tictactoe{
 	uint numGames;
 	mapping (uint => Game) games;
 
+	function is_first_move(bytes32 gameState) private{
+		uint i = 0;
+		uint numX = 0;
+		while(i<9){
+			if( gameState[i] == "X" ){ numX++;}
+			elseif(gamesState[i] != 0){ return false }
+			i++;
+		}
+		if( numX = 1 ){ return true; }
+		else( return false; )
+	}
+
 	function newGame(uint deadline, bytes32 gameState){
-	        gameID = numGames++; // campaignID is return variable
+        if( is_first_move(gameState) ){
+	        uint gameID = numGames++; // gameID is return variable
 	        Game g = games[gameID]; // assigns reference
 	        g.player1 = msg.sender;
 	        g.wager = msg.amount;
 	        g.deadline = block.number + deadline;
-	        if( is_first(gameState) ){
-	        	g.gameState = gameState;
-	        }
+        	g.gameState = gameState;
+        	return gameID;
+        }
+        else{ return false; }
 	}
 
-	function is_first(bytes32 gameState) private{
+
+	function is_second_move(byte32 gameState) private{
 
 	}
 
