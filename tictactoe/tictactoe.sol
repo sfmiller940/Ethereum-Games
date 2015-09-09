@@ -1,12 +1,12 @@
 Contract tictactoe{
 
 	struct Game {
-	    address player1;
-	    address player2;
-	    address activePlayer;
-	    uint wager;
-	    uint deadline;
-	    bytes32 gameState;
+		address player1;
+		address player2;
+		address activePlayer;
+		uint wager;
+		uint deadline;
+		bytes32 gameState;
 	}
 
 	uint numGames;
@@ -25,16 +25,16 @@ Contract tictactoe{
 	}
 
 	function newGame(uint deadline, bytes32 gameState){
-	        if( is_first_move(gameState) ){
-		        uint gameID = numGames++; // gameID is return variable
-		        Game g = games[gameID]; // assigns reference
-		        g.player1 = msg.sender;
-		        g.wager = msg.amount;
-		        g.deadline = block.number + deadline;
-	        	g.gameState = gameState;
-	        	return gameID;
-	        }
-	        else{ return false; }
+		if( is_first_move(gameState) ){
+			uint gameID = numGames++; // gameID is return variable
+			Game g = games[gameID]; // assigns reference
+			g.player1 = msg.sender;
+			g.wager = msg.amount;
+			g.deadline = block.number + deadline;
+			g.gameState = gameState;
+			return gameID;
+		}
+		else{ return false; }
 	}
 
 
