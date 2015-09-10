@@ -10,7 +10,8 @@ window.onload = function(){
   var version = web3.version.client;
   console.log(version);
 
-  var contractAddress = "0x5d45f4472d9af632b1828b71f86e61750762b81a";
+  // Ethereum Pyramid Address
+  var contractAddress = "0x7011f3edc7fa43c81440f9f43a6458174113b162";
 
   function timeConverter(UNIX_timestamp){
     var a = new Date(UNIX_timestamp * 1000);
@@ -28,18 +29,23 @@ window.onload = function(){
   function printvalues(){
     var coinbase = web3.eth.coinbase;
     document.getElementById('coinbase').innerText = coinbase;
-    var balance = web3.eth.getBalance(coinbase);
-    document.getElementById('balance').innerText = balance;
+    var balance = web3.fromWei( web3.eth.getBalance(coinbase), 'ether' );
+    document.getElementById('balance').innerText = balance + ' ETH';
       var blockNumber = web3.eth.blockNumber;
       document.getElementById('latestBlock').innerText = blockNumber;
       var hash = web3.eth.getBlock(blockNumber).hash;
       document.getElementById('latestBlockHash').innerText = hash;
       var timeStamp = web3.eth.getBlock(blockNumber).timestamp;
       document.getElementById('latestBlockTimestamp').innerText = Date(timeStamp);
-      var contractDate = timeConverter( web3.toDecimal( web3.eth.getStorageAt(contractAddress, 1) ) )
-      document.getElementById('contractDate').innerText = contractDate;
       document.getElementById('contractAddress').innerText = contractAddress;
-
+      //var contractDate = timeConverter( web3.toDecimal( web3.eth.getStorageAt(contractAddress, 1) ) )
+      //document.getElementById('contractDate').innerText = contractDate;
+      var contractFees = web3.fromWei( web3.toDecimal( web3.eth.getStorageAt( contractAddress, 2 ) ), 'ether');
+      document.getElementById('contractFees').innerText = contractFees + ' ETH';
+      var contractMembers = web3.toDecimal( web3.eth.getStorageAt( contractAddress, 0 ) );
+      document.getElementById('contractMembers').innerText = contractMembers;
+      var contractMember = web3.toDecimal( web3.eth.getStorageAt( contractAddress, 1 ) );
+      document.getElementById('contractMember').innerText = contractMember;
   }
 
   var filter_latest = web3.eth.filter('latest');
@@ -71,8 +77,10 @@ window.onload = function(){
     <h5>Latest Block Number: <strong id="latestBlock"></strong></h5>
     <h5>Latest Block Timestamp: <strong id="latestBlockTimestamp"></strong></h5>
     <h5>Latest Block Hash: <strong id="latestBlockHash"></strong></h5>
-    <h5>Contract Address: <strong id="contractAddress"></strong></h5>
-    <h5>Contract Date: <strong id="contractDate"></strong></h5>
+    <h5>Pyramid Address: <strong id="contractAddress"></strong></h5>
+    <h5>Pyramid Members: <strong id="contractMembers"></strong></h5>
+    <h5>Pyramid Payee: <strong id="contractMember"></strong></h5>
+    <h5>Pyramid Fees: <strong id="contractFees"></strong></h5>
     <br>
   </div>
 
