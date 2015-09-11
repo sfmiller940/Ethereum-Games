@@ -2,8 +2,8 @@ contract tictactoeth{
 
 	// Setup structure and array for games
 	struct Game {
-		mapping (uint => address) players;
-		uint[] gameState;
+		address[2] players;
+		uint[9] gameState;
 		uint wager;
 		uint deadline;
 	}
