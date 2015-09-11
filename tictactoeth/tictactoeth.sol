@@ -1,9 +1,11 @@
 contract tictactoeth{
 
+	enum marks { O, X }
+
 	// Setup structure and array for games
 	struct Game {
 		address[2] players;
-		uint[9] gameState;
+		marks[9] gameState;
 		uint wager;
 		uint deadline;
 	}
@@ -36,7 +38,7 @@ contract tictactoeth{
 		games[idx].players[0] = msg.sender;
 		games[idx].wager = msg.value;
 		games[idx].deadline = block.number + blocktime;
-		games[idx].gameState[move] = 0;
+		games[idx].gameState[move] = marks.O;
 		return idx;
 	}
 
@@ -44,7 +46,7 @@ contract tictactoeth{
 	function newMove(uint idx, uint move){
 
 		// Check for valid game and valid move.
-		if( idx >= games.length ||  move > 8 || games[idx].gameState[move] == 0 || games[idx].gameState[move] == 1 ){ 
+		if( idx >= games.length ||  move > 8 || games[idx].gameState[move] == marks.O || games[idx].gameState[move] == marks.X ){ 
 			msg.sender.send( msg.value );
 			return;
 		}
@@ -54,8 +56,8 @@ contract tictactoeth{
 		uint numO;
 		uint numX;
 		while( i < 9 ){
-			if( games[idx].gameState[i] == 0 ){ numO++; }
-			else if ( games[idx].gameState[i] == 1){ numX++; }
+			if( games[idx].gameState[i] == marks.O ){ numO++; }
+			else if ( games[idx].gameState[i] == marks.X){ numX++; }
 		}
 
 		// Process new player if second move.
@@ -76,44 +78,47 @@ contract tictactoeth{
 
 		// Make move if correct player.
 		if( ( numO > numX ) && ( msg.sender == games[idx].players[1] ) ){
-			games[idx].gameState[move] = 1;
+			games[idx].gameState[move] = marks.X;
 		}
 		if ( ( numO == numX ) && ( msg.sender == games[idx].players[0] ) ){
-			games[idx].gameState[move] = 0;
+			games[idx].gameState[move] = marks.O;
 		}
 
-		// Check for win.
-		if( (games[idx].gameState[0] == 0 && games[idx].gameState[3] == 0 && games[idx].gameState[6] == 0 ) ||
-			(games[idx].gameState[1] == 0 && games[idx].gameState[4] == 0 && games[idx].gameState[7] == 0 ) ||
-			(games[idx].gameState[2] == 0 && games[idx].gameState[5] == 0 && games[idx].gameState[8] == 0 ) ||
-			(games[idx].gameState[0] == 0 && games[idx].gameState[1] == 0 && games[idx].gameState[2] == 0 ) ||
-			(games[idx].gameState[3] == 0 && games[idx].gameState[4] == 0 && games[idx].gameState[5] == 0 ) ||
-			(games[idx].gameState[6] == 0 && games[idx].gameState[7] == 0 && games[idx].gameState[8] == 0 ) ||
-			(games[idx].gameState[0] == 0 && games[idx].gameState[4] == 0 && games[idx].gameState[8] == 0 ) ||
-			(games[idx].gameState[2] == 0 && games[idx].gameState[4] == 0 && games[idx].gameState[6] == 0 )
-			){
-				games[idx].players[0].send( games[idx].wager * 2 );
-				return;
-			}
-		if( (games[idx].gameState[0] == 1 && games[idx].gameState[3] == 1 && games[idx].gameState[6] == 1 ) ||
-			(games[idx].gameState[1] == 1 && games[idx].gameState[4] == 1 && games[idx].gameState[7] == 1 ) ||
-			(games[idx].gameState[2] == 1 && games[idx].gameState[5] == 1 && games[idx].gameState[8] == 1 ) ||
-			(games[idx].gameState[0] == 1 && games[idx].gameState[1] == 1 && games[idx].gameState[2] == 1 ) ||
-			(games[idx].gameState[3] == 1 && games[idx].gameState[4] == 1 && games[idx].gameState[5] == 1 ) ||
-			(games[idx].gameState[6] == 1 && games[idx].gameState[7] == 1 && games[idx].gameState[8] == 1 ) ||
-			(games[idx].gameState[0] == 1 && games[idx].gameState[4] == 1 && games[idx].gameState[8] == 1 ) ||
-			(games[idx].gameState[2] == 1 && games[idx].gameState[4] == 1 && games[idx].gameState[6] == 1 )
-			){
-				games[idx].players[1].send( games[idx].wager * 2 );
-				return;
-			}
-		// Check for stalemate or expired.
-		if ( numO + numX == 9 || games[idx].deadline < block.number ){
-			uint fee = games[idx].wager / 100;
-			collectedFees += 2 * fee;
-			games[idx].players[0].send( games[idx].wager - fee );
-			games[idx].players[1].send( games[idx].wager - fee );
-		}
+        // Check for win or stalemate.
+        if(numO + numX > 4){
+            if( (games[idx].gameState[0] == marks.O && games[idx].gameState[3] == marks.O && games[idx].gameState[6] == marks.O ) ||
+                (games[idx].gameState[1] == marks.O && games[idx].gameState[4] == marks.O && games[idx].gameState[7] == marks.O ) ||
+                (games[idx].gameState[2] == marks.O && games[idx].gameState[5] == marks.O && games[idx].gameState[8] == marks.O ) ||
+                (games[idx].gameState[0] == marks.O && games[idx].gameState[1] == marks.O && games[idx].gameState[2] == marks.O ) ||
+                (games[idx].gameState[3] == marks.O && games[idx].gameState[4] == marks.O && games[idx].gameState[5] == marks.O ) ||
+                (games[idx].gameState[6] == marks.O && games[idx].gameState[7] == marks.O && games[idx].gameState[8] == marks.O ) ||
+                (games[idx].gameState[0] == marks.O && games[idx].gameState[4] == marks.O && games[idx].gameState[8] == marks.O ) ||
+                (games[idx].gameState[2] == marks.O && games[idx].gameState[4] == marks.O && games[idx].gameState[6] == marks.O )
+                ){
+                    games[idx].players[0].send( games[idx].wager * 2 );
+                    return;
+                }
+            if( (games[idx].gameState[0] == marks.X && games[idx].gameState[3] == marks.X && games[idx].gameState[6] == marks.X ) ||
+                (games[idx].gameState[1] == marks.X && games[idx].gameState[4] == marks.X && games[idx].gameState[7] == marks.X ) ||
+                (games[idx].gameState[2] == marks.X && games[idx].gameState[5] == marks.X && games[idx].gameState[8] == marks.X ) ||
+                (games[idx].gameState[0] == marks.X && games[idx].gameState[1] == marks.X && games[idx].gameState[2] == marks.X ) ||
+                (games[idx].gameState[3] == marks.X && games[idx].gameState[4] == marks.X && games[idx].gameState[5] == marks.X ) ||
+                (games[idx].gameState[6] == marks.X && games[idx].gameState[7] == marks.X && games[idx].gameState[8] == marks.X ) ||
+                (games[idx].gameState[0] == marks.X && games[idx].gameState[4] == marks.X && games[idx].gameState[8] == marks.X ) ||
+                (games[idx].gameState[2] == marks.X && games[idx].gameState[4] == marks.X && games[idx].gameState[6] == marks.X )
+                ){
+                    games[idx].players[1].send( games[idx].wager * 2 );
+                    return;
+                }
+        }
+
+        // Check for stalemate or expired.
+        if ( numO + numX == 9 || games[idx].deadline < block.number ){
+            uint fee = games[idx].wager / 100;
+            collectedFees += 2 * fee;
+            games[idx].players[0].send( games[idx].wager - fee );
+            games[idx].players[1].send( games[idx].wager - fee );
+        }
 
 	}
 
