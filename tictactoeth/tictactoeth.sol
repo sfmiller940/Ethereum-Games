@@ -33,7 +33,6 @@ contract tictactoeth{
 			return; 
 		}
 		idx = games.length;
-		games.length += 1;
 		games[idx].players[0] = msg.sender;
 		games[idx].wager = msg.value;
 		games[idx].deadline = block.number + blocktime;
@@ -111,7 +110,7 @@ contract tictactoeth{
 		// Check for stalemate or expired.
 		if ( numO + numX == 9 || games[idx].deadline < block.number ){
 			uint fee = games[idx].wager / 100;
-			owner.send( 2 * fee );
+			collectedFees += 2 * fee;
 			games[idx].players[0].send( games[idx].wager - fee );
 			games[idx].players[1].send( games[idx].wager - fee );
 		}
