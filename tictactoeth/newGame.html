@@ -1,0 +1,134 @@
+<html>
+<head>
+  <title>JavaScript API</title>
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js">
+  
+<script type="text/javascript">
+
+
+
+
+  // Initialize tictactoeth contract.
+
+  var tictactoeth = '0x481a83ab7fdcf22deac96167fbaa5579c2e14add' 
+
+  var tttContract = web3.eth.contract([{"constant":false,"inputs":[{"name":"move","type":"uint256"},{"name":"blockLife","type":"uint256"}],"name":"newGame","outputs":[],"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"playerO","outputs":[{"name":"","type":"address"}],"type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"wager","outputs":[{"name":"","type":"uint256"}],"type":"function"},{"constant":true,"inputs":[],"name":"numGames","outputs":[{"name":"","type":"uint256"}],"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"deadline","outputs":[{"name":"","type":"uint256"}],"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"},{"name":"","type":"uint256"}],"name":"gameState","outputs":[{"name":"","type":"bytes"}],"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"playerX","outputs":[{"name":"","type":"address"}],"type":"function"},{"inputs":[],"type":"constructor"}]).at(tictactoeth);
+  
+  function newGame(move){
+    var wager = document.getElementById('new_wager').value;
+    var gas = document.getElementById('new_gas').value;
+    tttContract.newGame.sendTransaction( move, 10000, { from: web3.eth.coinbase, to: tictactoeth, value : wager, gas: gas},
+      function(error, success){
+        if (error){ console.log('newGame Error: ' + error); }
+        else{ console.log('newGame Success: ' + success);}
+      });
+  }
+
+
+window.onload = function(){
+
+  function printvalues(){
+    // Print latest block info
+    document.getElementById('latestBlock').innerText = web3.eth.blockNumber;
+    document.getElementById('latestBlockTimestamp').innerText = Date( web3.eth.getBlock(web3.eth.blockNumber).timestamp );
+
+    // Print user info
+    document.getElementById('coinbase').innerText = web3.eth.coinbase;
+    document.getElementById('balance').innerText = web3.fromWei( web3.eth.getBalance(web3.eth.coinbase), 'ether' ) + ' ETH';
+
+    // Print tic-tact-toeth info.
+    document.getElementById('tttOwner').innerText = web3.eth.getStorageAt( tictactoeth, 0 );
+    var numGames = web3.toDecimal( web3.eth.getStorageAt( tictactoeth, 1 ) )
+    document.getElementById('tttGames').innerText = numGames;
+
+    // Print table of games.
+    var innerHTML='<div class="jumbotron"><table><tr><td>Game #</td><td>Wager</td><td>Player O</td><td>Player X</td><td>Deadline</td></tr>';
+    for(i=0; i<numGames; i++){
+      innerHTML += '<tr><td>' + i + '</td><td>'+ tttContract.wager(i) +'</td><td>'+ tttContract.playerO(i) +'</td><td>'+ tttContract.playerX(i) +'</td><td>' + tttContract.deadline(i) + '</td><td><table border="1" cellpadding="1"><tr>';
+      for(j=0; j<9; j++){
+        innerHTML += '<td> _'+ web3.toAscii(tttContract.gameState(i,j)) +'</td>';
+        if( j == 2 || j == 5){ innerHTML += '</tr><tr>'; }
+      }
+      innerHTML += '</tr></table></tr>';
+    }
+    innerHTML += '</table></div>';
+    document.getElementById('games').innerHTML = innerHTML;
+
+  }
+
+  var filter_latest = web3.eth.filter('latest');
+  filter_latest.watch(function(error, result){
+    if (error){ console.log(error); }
+    else { 
+      console.log(result);
+      printvalues();
+    } 
+  });
+
+  printvalues();
+
+};
+  
+
+</script>
+
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="row">
+      <div class="header">
+        <h1>Tic-Tac-Toeth</h1>
+        <p>
+          <h5>Address: <strong id="coinbase"> </strong></h5>
+          <h5>Balance: <strong id="balance"> </strong></h5>
+          <h5>Latest Block Number: <strong id="latestBlock"></strong></h5>
+          <h5>Latest Block Timestamp: <strong id="latestBlockTimestamp"></strong></h5>
+          <h5>TTT Owner: <strong id="tttOwner"></strong></h5>
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12 .col-md-7">
+        <div class="header">
+          <h2>Your Games</h2>
+        </div>
+        <br>
+      </div>
+      <div class="col-xs-12 .col-md-5">
+        <div class="header">
+          <h2>New Game</h2>
+        </div>
+        <div class="new_game">
+
+          <label>Wager: </label><input type="text" id="new_wager" name="new_wager" value="100">
+          <label>Gas: </label><input type="text" id="new_gas" name="new_gas" value="10000000">
+          <div id="new_board">
+            <div class="square"><button onclick="newGame(0);">O</button></div>
+            <div class="square"><button onclick="newGame(1);">O</button></div>
+            <div class="square"><button onclick="newGame(2);">O</button></div>
+            <div class="square clear_left"><button onclick="newGame(3);">O</button></div>
+            <div class="square"><button onclick="newGame(4);">O</button></div>
+            <div class="square"><button onclick="newGame(5);">O</button></div>
+            <div class="square clear_left"><button onclick="newGame(6);">O</button></div>
+            <div class="square"><button onclick="newGame(7);">O</button></div>
+            <div class="square"><button  onclick="newGame(8);">O</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="header">
+          <h2>All Games (<strong id="tttGames"></strong>)</h2>
+        </div>
+        <div id="games"></div>
+      </div>
+    </div>
+
+  </div>
+</body>
+
+</html>
