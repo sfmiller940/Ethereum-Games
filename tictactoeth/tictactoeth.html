@@ -1,0 +1,75 @@
+<html>
+<head>
+  <title>JavaScript API</title>
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js">
+  
+<script type="text/javascript">
+
+window.onload = function(){
+
+  // Initialize tictactoeth contract.
+  var tictactoeth = "0xf03c87d3ecb06ada2590367f644a72088e43013d";
+
+  var ABI = [{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"games","outputs":[{"name":"deadline","type":"uint256"}],"type":"function"},{"constant":false,"inputs":[{"name":"move","type":"uint256"},{"name":"blockLife","type":"uint256"}],"name":"newGame","outputs":[],"type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"type":"function"},{"inputs":[],"type":"constructor"}];
+
+  var tttContract = web3.eth.contract( ABI ).at( tictactoeth );
+  
+  tttContract.newGame.sendTransaction( web3.fromDecimal('0'), web3.fromDecimal('10000'), { from: web3.eth.coinbase, to: tictactoeth, value : 10000, gas: 100000000},
+    function(error, success){
+      console.log('Contract call: ' + error + ' ' + success);
+    });
+
+  function printvalues(){
+    // Print latest block info
+    document.getElementById('latestBlock').innerText = web3.eth.blockNumber;
+    document.getElementById('latestBlockTimestamp').innerText = Date( web3.eth.getBlock(web3.eth.blockNumber).timestamp );
+
+    // Print user info
+    document.getElementById('coinbase').innerText = web3.eth.coinbase;
+    document.getElementById('balance').innerText = web3.fromWei( web3.eth.getBalance(web3.eth.coinbase), 'ether' ) + ' ETH';
+
+    // Print tic-tact-toeth info.
+    document.getElementById('tttOwner').innerText = web3.eth.getStorageAt( tictactoeth, 0 );
+    document.getElementById('tttGames').innerText = web3.toDecimal( web3.eth.getStorageAt( tictactoeth, 1 ) );
+    document.getElementById('tttFees').innerText = tttContract.games;
+  }
+
+  var filter_latest = web3.eth.filter('latest');
+  filter_latest.watch(function(error, result){
+    if (error){ console.log(error); }
+    else { 
+      console.log(result);
+      printvalues();
+    } 
+  });
+
+  printvalues();
+
+};
+  
+
+</script>
+
+</head>
+
+<body>
+
+  <div class="header">
+    <h3>Tic-Tac-Toeth</h3>
+  </div>
+
+  <div class="jumbotron">
+    <h5>Latest Block Number: <strong id="latestBlock"></strong></h5>
+    <h5>Latest Block Timestamp: <strong id="latestBlockTimestamp"></strong></h5>
+    <h5>Coinbase Address: <strong id="coinbase"> </strong></h5>
+    <h5>Balance: <strong id="balance"> </strong></h5>
+    <h5>TTT Owner: <strong id="tttOwner"></strong></h5>
+    <h5>TTT Games: <strong id="tttGames"></strong></h5>
+    <h5>TTT Fees: <strong id="tttFees"></strong></h5>
+    <br>
+  </div>
+
+</body>
+
+</html>
