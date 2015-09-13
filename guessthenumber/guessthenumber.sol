@@ -27,8 +27,11 @@ contract guessthenumber{
 			return;
 		}
 		if(msg.value > wagers[idx] / ranges[idx]) msg.sender.send( msg.value - ( wagers[idx] / ranges[idx] ) );
-		if(number == numbers[idx]){ msg.sender.send( wagers[idx] ); }
-		else{ players[idx].send( wagers[idx] / ranges[idx] ); }
+		if(number != numbers[idx]){ players[idx].send( wagers[idx] / ranges[idx] ); }
+		else{ 
+			msg.sender.send( wagers[idx] );
+			wagers[idx] = 0;
+		} 
 	}
 
 }
