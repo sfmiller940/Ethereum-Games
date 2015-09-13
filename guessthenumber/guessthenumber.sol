@@ -9,7 +9,7 @@ contract guessthenumber{
 	// Ideal organizational scheme?
 	uint public numGames;
 	mapping (uint => address) public players; // not public?
-	mapping (uint => uint) numbers;
+	mapping (uint => uint) numbers;           // not public != secure?
 	mapping (uint => uint) public ranges;
 	mapping (uint => uint) public wagers;
 
