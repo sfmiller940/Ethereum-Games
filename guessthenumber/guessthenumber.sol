@@ -16,7 +16,8 @@ contract guessthenumber{
 
 	function newGame( uint number, uint range){
 
-		if( number < 1 || number > range ) return;
+		// Reject zero wagers and out of bounds.
+		if( number < 1 || number > range || msg.value == 0) return;
 
 		players[numGames] = msg.sender;
 		numbers[numGames] = number;
@@ -31,13 +32,16 @@ contract guessthenumber{
 
 		uint bet = wagers[idx] / ranges[idx];
 
+		// Reject bad ID, number or value.
 		if( idx > numGames || number > ranges[idx] || number < 1 || msg.value < bet ){
 			msg.sender.send( msg.value );
 			return;
 		}
 
+		// Partial refund for overpayment.
 		if(msg.value > bet) msg.sender.send( msg.value - bet );
 		
+		// Payout.
 		players[idx].send( bet );
 		
 		if(number == numbers[idx]){
