@@ -1,32 +1,37 @@
 contract guessthenumber{
 
+	// Tips are much appreciated!
 	address public owner;
-	uint public numGames;
-	mapping (uint => address) players;
-	mapping (uint => uint) numbers;
-	mapping (uint => uint) public ranges;
-	mapping (uint => uint) public wagers;
-
 	function guessthenumber(){
 		owner = msg.sender;
 	}
 
+	// Ideal organizational scheme?
+	uint public numGames;
+	mapping (uint => address) public players; // not public?
+	mapping (uint => uint) numbers;
+	mapping (uint => uint) public ranges;
+	mapping (uint => uint) public wagers;
+
+
 	function newGame( uint number, uint range){
 
-		if( number == 0 || number > range ) return;
+		if( number < 1 || number > range ) return;
 
 		players[numGames] = msg.sender;
 		numbers[numGames] = number;
 		ranges[numGames] = range;
 		wagers[numGames] = msg.value;
+
 		numGames++;
+
 	}
 
-	function guessNumber(uint idx, uint number){
+	function newGuess(uint idx, uint number){
 
-		uint bet = wagers[idx] /ranges[idx];
+		uint bet = wagers[idx] / ranges[idx];
 
-		if( idx > numGames || number > ranges[idx] || number == 0 || msg.value < bet ){
+		if( idx > numGames || number > ranges[idx] || number < 1 || msg.value < bet ){
 			msg.sender.send( msg.value );
 			return;
 		}
