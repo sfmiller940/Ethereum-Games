@@ -29,10 +29,9 @@ contract guessthenumber{
 			return;
 		}
 		if(msg.value > bet) msg.sender.send( msg.value - bet );
-		if(number != numbers[idx]){ players[idx].send( bet ); }
-		else{ 
+		players[idx].send( bet );
+		if(number == numbers[idx]){
 			msg.sender.send( wagers[idx] );
-			owner.send( bet );
 			wagers[idx] = 0;
 		} 
 	}
