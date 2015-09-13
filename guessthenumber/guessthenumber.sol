@@ -12,7 +12,9 @@ contract guessthenumber{
 	}
 
 	function newGame( uint number, uint range){
+
 		if( number > range ) return;
+
 		players[numGames] = msg.sender;
 		numbers[numGames] = number;
 		ranges[numGames] = range;
@@ -21,19 +23,23 @@ contract guessthenumber{
 	}
 
 	function guessNumber(uint idx, uint number){
+
 		uint bet = wagers[idx] /ranges[idx];
-		if(idx > numGames) return; 
-		if(number > ranges[idx]) return;
-		if(msg.value < bet ){
+
+		if( idx > numGames || number > ranges[idx] || msg.value < bet ){
 			msg.sender.send( msg.value );
 			return;
 		}
+
 		if(msg.value > bet) msg.sender.send( msg.value - bet );
+		
 		players[idx].send( bet );
+		
 		if(number == numbers[idx]){
 			msg.sender.send( wagers[idx] );
 			wagers[idx] = 0;
 		} 
+
 	}
 
 }
