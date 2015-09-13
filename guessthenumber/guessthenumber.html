@@ -11,9 +11,9 @@
 
   // Initialize tictactoeth contract.
 
-var guessthenumber_addr = '0x1e99de58e3aab310aa0ad8c7f49b6002994af983';
+var guessthenumber_addr = '0x4f68483a072575771df4ec8ca20657282c7c979d';
 
-var guessthenumber = web3.eth.contract([{"constant":false,"inputs":[{"name":"number","type":"uint256"},{"name":"range","type":"uint256"}],"name":"newGame","outputs":[],"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"wagers","outputs":[{"name":"","type":"uint256"}],"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"ranges","outputs":[{"name":"","type":"uint256"}],"type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"type":"function"},{"constant":false,"inputs":[{"name":"idx","type":"uint256"},{"name":"number","type":"uint256"}],"name":"guessNumber","outputs":[],"type":"function"},{"constant":true,"inputs":[],"name":"numGames","outputs":[{"name":"","type":"uint256"}],"type":"function"},{"inputs":[],"type":"constructor"}]).at( guessthenumber_addr );
+var guessthenumber = web3.eth.contract([{"constant":false,"inputs":[{"name":"number","type":"uint256"},{"name":"range","type":"uint256"}],"name":"newGame","outputs":[],"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"wagers","outputs":[{"name":"","type":"uint256"}],"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"ranges","outputs":[{"name":"","type":"uint256"}],"type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"type":"function"},{"constant":true,"inputs":[],"name":"numGames","outputs":[{"name":"","type":"uint256"}],"type":"function"},{"constant":false,"inputs":[{"name":"idx","type":"uint256"},{"name":"number","type":"uint256"}],"name":"newGuess","outputs":[],"type":"function"},{"inputs":[],"type":"constructor"}]).at( guessthenumber_addr );
 
   
   function newGame(){
@@ -21,13 +21,22 @@ var guessthenumber = web3.eth.contract([{"constant":false,"inputs":[{"name":"num
     var range = document.getElementById('new_range').value;
     var wager = document.getElementById('new_wager').value;
     var gas = document.getElementById('new_gas').value;
-    guessthenumber.newGame.sendTransaction( number, range, { from: web3.eth.coinbase, to: guessthenumber_addr, value : wager, gas: gas},
+    guessthenumber.newGame.sendTransaction( number, range, { from: web3.eth.coinbase, to: guessthenumber_addr, value : web3.toWei(wager, 'ether'), gas: gas},
       function(error, success){
         if (error){ console.log('newGame Error: ' + error); }
         else{ console.log('newGame Success: ' + success);}
       });
   }
 
+  function newGuess( idx, bet ){
+    var guess = document.getElementById('guess'+idx).value;
+    var gas = 100000;
+    guessthenumber.newGuess.sendTransaction( idx, guess, { from: web3.eth.coinbase, to: guessthenumber_addr, value :  Math.floor( guessthenumber.wagers(idx) / guessthenumber.ranges(idx) ), gas: gas},
+      function(error, success){
+        if (error){ console.log('newGuess Error: ' + error); }
+        else{ console.log('newGuess Success: ' + success);}
+      });
+  }
 
 window.onload = function(){
 
@@ -46,9 +55,9 @@ window.onload = function(){
     document.getElementById('tttGames').innerText = numGames;
 
     // Print table of games.
-    var innerHTML='<div class="jumbotron"><table><tr><td>Game #</td><td>Wager</td><td>Range</td><td>Deadline</td></tr>';
+    var innerHTML='<div class="jumbotron"><table><tr><td>Game #</td><td>Deadline</td><td>Range</td><td>Win</td><td>Bet</td><td>Your Guess</td><td></td></tr>';
     for(i=0; i<numGames; i++){
-      innerHTML += '<tr><td>' + i + '</td><td>'+ guessthenumber.wagers(i) +'</td><td>'+ guessthenumber.ranges(i) +'</td><td></td></tr>';
+      innerHTML += '<tr><td>' + i + '</td><td></td><td>1 - '+ guessthenumber.ranges(i) +'</td><td>'+ web3.fromWei( guessthenumber.wagers(i), 'ether' ) +'</td><td>'+  web3.fromWei( Math.floor( guessthenumber.wagers(i) / guessthenumber.ranges(i) ), 'ether' ) +'</td><td><input type="text" name="guess'+ i +'" id="guess'+ i +'"></td><td><button onclick="newGuess('+i+');">Guess!</button></td></tr>';
     }
     innerHTML += '</table></div>';
     document.getElementById('games').innerHTML = innerHTML;
