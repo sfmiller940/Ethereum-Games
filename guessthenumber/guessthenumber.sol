@@ -14,6 +14,7 @@ contract guessthenumber{
 	mapping (uint => uint) public wagers;
 
 
+	// Events?
 	function newGame( uint number, uint range){
 
 		// Reject zero wagers and out of bounds.
@@ -41,7 +42,7 @@ contract guessthenumber{
 		// Partial refund for overpayment.
 		if(msg.value > bet) msg.sender.send( msg.value - bet );
 		
-		// Payout.
+		// Payout. Events?
 		players[idx].send( bet );
 		
 		if(number == numbers[idx]){
