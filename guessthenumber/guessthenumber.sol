@@ -13,9 +13,12 @@ contract guessthenumber{
 	mapping (uint => uint) public ranges;
 	mapping (uint => uint) public wagers;
 
+	event newGame( uint indexed idx, address indexed player, uint range, uint wager );
+	event newGuess( uint indexed idx, address indexed bettor );
+	event newWin( uint indexed idx, address indexed bettor, uint number );
 
 	// Events?
-	function newGame( uint number, uint range){
+	function makeGame( uint number, uint range){
 
 		// Reject zero wagers and out of bounds.
 		if( number < 1 || number > range || msg.value == 0) return;
@@ -25,13 +28,15 @@ contract guessthenumber{
 		ranges[numGames] = range;
 		wagers[numGames] = msg.value;
 
+		newGame(numGames, msg.sender, range, msg.value);
+
 		numGames++;
 
 	}
 
-	function newGuess(uint idx, uint number){
+	function makeGuess(uint idx, uint number){
 
-		uint bet = wagers[idx] / ranges[idx];
+		uint bet = 2 * wagers[idx] / ranges[idx];
 
 		// Reject bad ID, number or value.
 		if( idx > numGames || number > ranges[idx] || number < 1 || msg.value < bet ){
@@ -43,11 +48,13 @@ contract guessthenumber{
 		if(msg.value > bet) msg.sender.send( msg.value - bet );
 		
 		// Payout. Events?
+		newGuess( idx, msg.sender);
 		players[idx].send( bet );
 		
 		if(number == numbers[idx]){
 			msg.sender.send( wagers[idx] );
 			wagers[idx] = 0;
+			newWin(idx, msg.sender, number);
 		} 
 
 	}
