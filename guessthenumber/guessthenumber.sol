@@ -6,9 +6,8 @@ contract guessthenumber{
 		owner = msg.sender;
 	}
 
-	// Ideal organizational scheme?
 	uint public numGames;
-	mapping (uint => address) public players; // not public?
+	mapping (uint => address) public players;
 	mapping (uint => uint) numbers;           // not public != secure?
 	mapping (uint => uint) public ranges;
 	mapping (uint => uint) public wagers;
@@ -17,7 +16,6 @@ contract guessthenumber{
 	event newGuess( uint indexed idx, address indexed bettor );
 	event newWin( uint indexed idx, address indexed bettor, uint number );
 
-	// Events?
 	function makeGame( uint number, uint range){
 
 		// Reject zero wagers and out of bounds.
@@ -44,10 +42,10 @@ contract guessthenumber{
 			return;
 		}
 
-		// Partial refund for overpayment.
+		// Refund any overpayment.
 		if(msg.value > bet) msg.sender.send( msg.value - bet );
 		
-		// Payout. Events?
+		// Payout.
 		newGuess( idx, msg.sender);
 		players[idx].send( bet );
 		
