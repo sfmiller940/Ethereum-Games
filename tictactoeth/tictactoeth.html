@@ -8,15 +8,15 @@
 
   // Initialize tictactoeth_addr contract.
 
-var tictactoeth_addr = '0x7f0e74d3d1bd2627397b31158da46510ca6a5631' 
+var tictactoeth_addr = '0x98b550ed3003ffac972e78ec0cfae685ac237caa';
 
-var tictactoeth = web3.eth.contract([{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"playerO","outputs":[{"name":"","type":"address"}],"type":"function"},{"constant":false,"inputs":[{"name":"idx","type":"uint256"},{"name":"move","type":"uint256"}],"name":"createMove","outputs":[],"type":"function"},{"constant":false,"inputs":[{"name":"move","type":"uint256"},{"name":"blockLife","type":"uint256"}],"name":"createGame","outputs":[],"type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"type":"function"},{"constant":true,"inputs":[],"name":"collectedFees","outputs":[{"name":"","type":"uint256"}],"type":"function"},{"constant":false,"inputs":[{"name":"recipient","type":"address"}],"name":"collectFees","outputs":[],"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"wager","outputs":[{"name":"","type":"uint256"}],"type":"function"},{"constant":true,"inputs":[],"name":"numGames","outputs":[{"name":"","type":"uint256"}],"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"deadline","outputs":[{"name":"","type":"uint256"}],"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"},{"name":"","type":"uint256"}],"name":"gameState","outputs":[{"name":"","type":"uint256"}],"type":"function"},{"constant":false,"inputs":[],"name":"tictactoeth_addr","outputs":[],"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"playerX","outputs":[{"name":"","type":"address"}],"type":"function"}]).at(tictactoeth_addr);
+var tictactoeth = web3.eth.contract([{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"playerO","outputs":[{"name":"","type":"address"}],"type":"function"},{"constant":false,"inputs":[{"name":"idx","type":"uint256"},{"name":"move","type":"uint256"}],"name":"createMove","outputs":[],"type":"function"},{"constant":false,"inputs":[{"name":"move","type":"uint256"},{"name":"blockLife","type":"uint256"}],"name":"createGame","outputs":[],"type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"type":"function"},{"constant":true,"inputs":[],"name":"collectedFees","outputs":[{"name":"","type":"uint256"}],"type":"function"},{"constant":false,"inputs":[{"name":"recipient","type":"address"}],"name":"collectFees","outputs":[],"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"wager","outputs":[{"name":"","type":"uint256"}],"type":"function"},{"constant":true,"inputs":[],"name":"numGames","outputs":[{"name":"","type":"uint256"}],"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"deadline","outputs":[{"name":"","type":"uint256"}],"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"},{"name":"","type":"uint256"}],"name":"gameState","outputs":[{"name":"","type":"uint256"}],"type":"function"},{"constant":false,"inputs":[],"name":"tictactoeth_addr","outputs":[],"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"playerX","outputs":[{"name":"","type":"address"}],"type":"function"},{"anonymous":false,"inputs":[{"indexed":false,"name":"idx","type":"uint256"}],"name":"newGame","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"idx","type":"uint256"}],"name":"newMove","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"idx","type":"uint256"},{"indexed":false,"name":"winner","type":"address"}],"name":"winGame","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"idx","type":"uint256"}],"name":"expireGame","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"idx","type":"uint256"}],"name":"staleGame","type":"event"}]).at(tictactoeth_addr);
   
 function createGame(move){
   console.log('newGame called');
   var wager = document.getElementById('new_wager').value;
   var gas = document.getElementById('new_gas').value;
-  tictactoeth.createGame.sendTransaction( move, 10000, { from: web3.eth.coinbase, to: tictactoeth_addr, value : wager, gas: gas},
+  tictactoeth.createGame.sendTransaction( move, 10000, { from: web3.eth.coinbase, to: tictactoeth_addr, value : web3.toWei(wager, 'ether'), gas: gas},
     function(error, success){
       if (error){ console.log('newGame Error: ' + error); }
       else{ console.log('newGame Success: ' + success);}
@@ -24,8 +24,8 @@ function createGame(move){
 }
 
 function joinGame(idx, move){
-  var wager = tictactoeth.wager(idx);
-  tictactoeth.createMove.sendTransaction(idx, move,{ from: web3.eth.coinbase, to: tictactoeth_addr, value : wager, gas: 100000});
+  var bet =  Math.floor( tictactoeth.wager(idx) / 3 );
+  tictactoeth.createMove.sendTransaction(idx, move,{ from: web3.eth.coinbase, to: tictactoeth_addr, value : bet, gas: 10000000});
 
 }
 
@@ -45,9 +45,13 @@ window.onload = function(){
     var numGames = web3.toDecimal( web3.eth.getStorageAt(tictactoeth_addr, 2) );
     document.getElementById('tttGames').innerText = numGames;
 
-    var innerHTML='<div class="jumbotron"><table><tr><td>Game #</td><td>Wager</td><td>Player O</td><td>Player X</td><td>Deadline</td></tr>';
+    var wager;
+    var bet;
+    var innerHTML='<div class="jumbotron"><table><tr><td>Game #</td><td>Win</td><td>Bet</td><td>Player O</td><td>Player X</td><td>Deadline</td></tr>';
     for(i=0; i<numGames; i++){
-      innerHTML += '<tr><td>' + i + '</td><td>'+ tictactoeth.wager(i) +'</td><td>'+ tictactoeth.playerO(i) +'</td><td>'+ tictactoeth.playerX(i) +'</td><td>' + tictactoeth.deadline(i) + '</td><td><table border="1" cellpadding="1"><tr>';
+      wager = web3.fromWei( tictactoeth.wager(i), 'ether');
+      bet = web3.fromWei( Math.floor( tictactoeth.wager(i) / 3) );
+      innerHTML += '<tr><td>' + i + '</td><td>'+ ((1 * wager) + (1 * bet)) +'</td><td>'+ bet +'</td><td>'+ tictactoeth.playerO(i) +'</td><td>'+ tictactoeth.playerX(i) +'</td><td>' + tictactoeth.deadline(i) + '</td><td><table border="1" cellpadding="1"><tr>';
       for(j=0; j<9; j++){
         var OorButton;
         if( web3.toDecimal(tictactoeth.gameState(i,j)) == 1){ OorButton = 'O'; }
