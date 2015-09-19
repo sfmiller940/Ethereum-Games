@@ -116,7 +116,7 @@ contract tictactoeth{
 	                    collectedFees += fee;
 	                    return;
 	                }
-	            else if( ((gameState[idx][0] == 2) && (gameState[idx][3] == 2) && (gameState[idx][6] == 2) ) ||
+	            	else if( ((gameState[idx][0] == 2) && (gameState[idx][3] == 2) && (gameState[idx][6] == 2) ) ||
 	                ((gameState[idx][1] == 2) && (gameState[idx][4] == 2) && (gameState[idx][7] == 2) ) ||
 	                ((gameState[idx][2] == 2) && (gameState[idx][5] == 2) && (gameState[idx][8] == 2) ) ||
 	                ((gameState[idx][0] == 2) && (gameState[idx][1] == 2) && (gameState[idx][2] == 2) ) ||
