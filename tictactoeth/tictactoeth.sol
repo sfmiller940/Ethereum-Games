@@ -53,9 +53,9 @@ contract tictactoeth{
 		// Check for expired.
 		if( deadline[idx] > block.number ){
 			msg.sender.send( msg.value );
-            playerO[idx].send( wager[idx] );
-            playerX[idx].send( bet );
-            expireGame(idx);
+            		playerO[idx].send( wager[idx] );
+            		playerX[idx].send( bet );
+            		expireGame(idx);
 		}
 
 		// Check for valid game and valid move.
@@ -98,50 +98,50 @@ contract tictactoeth{
 			gameState[idx][move] = 1;
 		}
 
-        // Check for win
-        if(numO + numX > 3){
-            uint fee = ( wager[idx] + bet ) / 100;
-            if( ((gameState[idx][0] == 1) && (gameState[idx][3] == 1) && (gameState[idx][6] == 1) ) ||
-                ((gameState[idx][1] == 1) && (gameState[idx][4] == 1) && (gameState[idx][7] == 1) ) ||
-                ((gameState[idx][2] == 1) && (gameState[idx][5] == 1) && (gameState[idx][8] == 1) ) ||
-                ((gameState[idx][0] == 1) && (gameState[idx][1] == 1) && (gameState[idx][2] == 1) ) ||
-                ((gameState[idx][3] == 1) && (gameState[idx][4] == 1) && (gameState[idx][5] == 1) ) ||
-                ((gameState[idx][6] == 1) && (gameState[idx][7] == 1) && (gameState[idx][8] == 1) ) ||
-                ((gameState[idx][0] == 1) && (gameState[idx][4] == 1) && (gameState[idx][8] == 1) ) ||
-                ((gameState[idx][2] == 1) && (gameState[idx][4] == 1) && (gameState[idx][6] == 1) )
-                ){
-                    playerO[idx].send( wager[idx] + bet - fee);
-                    wager[idx] = 0;
-                    winGame(idx, playerO[idx]);
-                    collectedFees += fee;
-                    return;
-                }
-            else if( ((gameState[idx][0] == 2) && (gameState[idx][3] == 2) && (gameState[idx][6] == 2) ) ||
-                ((gameState[idx][1] == 2) && (gameState[idx][4] == 2) && (gameState[idx][7] == 2) ) ||
-                ((gameState[idx][2] == 2) && (gameState[idx][5] == 2) && (gameState[idx][8] == 2) ) ||
-                ((gameState[idx][0] == 2) && (gameState[idx][1] == 2) && (gameState[idx][2] == 2) ) ||
-                ((gameState[idx][3] == 2) && (gameState[idx][4] == 2) && (gameState[idx][5] == 2) ) ||
-                ((gameState[idx][6] == 2) && (gameState[idx][7] == 2) && (gameState[idx][8] == 2) ) ||
-                ((gameState[idx][0] == 2) && (gameState[idx][4] == 2) && (gameState[idx][8] == 2) ) ||
-                ((gameState[idx][2] == 2) && (gameState[idx][4] == 2) && (gameState[idx][6] == 2) )
-                ){
-                    playerX[idx].send( wager[idx] + bet - fee);
-                    wager[idx] = 0;
-                    winGame(idx, playerX[idx]);
-                    collectedFees += fee;
-                    return;
-                }
-	        // Check for stalemate.
-	        else if ( numO + numX == 9 ){
-	            playerO[idx].send( wager[idx] );
-	            playerX[idx].send( bet );
-	            wager[idx] = 0;
-	            staleGame(idx);
-	            return;
+		// Check for win
+        	if(numO + numX > 3){
+            		uint fee = ( wager[idx] + bet ) / 100;
+	            	if( ((gameState[idx][0] == 1) && (gameState[idx][3] == 1) && (gameState[idx][6] == 1) ) ||
+	                ((gameState[idx][1] == 1) && (gameState[idx][4] == 1) && (gameState[idx][7] == 1) ) ||
+	                ((gameState[idx][2] == 1) && (gameState[idx][5] == 1) && (gameState[idx][8] == 1) ) ||
+	                ((gameState[idx][0] == 1) && (gameState[idx][1] == 1) && (gameState[idx][2] == 1) ) ||
+	                ((gameState[idx][3] == 1) && (gameState[idx][4] == 1) && (gameState[idx][5] == 1) ) ||
+	                ((gameState[idx][6] == 1) && (gameState[idx][7] == 1) && (gameState[idx][8] == 1) ) ||
+	                ((gameState[idx][0] == 1) && (gameState[idx][4] == 1) && (gameState[idx][8] == 1) ) ||
+	                ((gameState[idx][2] == 1) && (gameState[idx][4] == 1) && (gameState[idx][6] == 1) )
+	                ){
+	                    playerO[idx].send( wager[idx] + bet - fee);
+	                    wager[idx] = 0;
+	                    winGame(idx, playerO[idx]);
+	                    collectedFees += fee;
+	                    return;
+	                }
+	            else if( ((gameState[idx][0] == 2) && (gameState[idx][3] == 2) && (gameState[idx][6] == 2) ) ||
+	                ((gameState[idx][1] == 2) && (gameState[idx][4] == 2) && (gameState[idx][7] == 2) ) ||
+	                ((gameState[idx][2] == 2) && (gameState[idx][5] == 2) && (gameState[idx][8] == 2) ) ||
+	                ((gameState[idx][0] == 2) && (gameState[idx][1] == 2) && (gameState[idx][2] == 2) ) ||
+	                ((gameState[idx][3] == 2) && (gameState[idx][4] == 2) && (gameState[idx][5] == 2) ) ||
+	                ((gameState[idx][6] == 2) && (gameState[idx][7] == 2) && (gameState[idx][8] == 2) ) ||
+	                ((gameState[idx][0] == 2) && (gameState[idx][4] == 2) && (gameState[idx][8] == 2) ) ||
+	                ((gameState[idx][2] == 2) && (gameState[idx][4] == 2) && (gameState[idx][6] == 2) )
+	                ){
+	                    playerX[idx].send( wager[idx] + bet - fee);
+	                    wager[idx] = 0;
+	                    winGame(idx, playerX[idx]);
+	                    collectedFees += fee;
+	                    return;
+	                }
+		        // Check for stalemate.
+		        else if ( numO + numX == 9 ){
+		            playerO[idx].send( wager[idx] );
+		            playerX[idx].send( bet );
+		            wager[idx] = 0;
+		            staleGame(idx);
+		            return;
+	
+		        }
 
-	        }
-
-        }
+        	}
 
         newMove(idx);
 
