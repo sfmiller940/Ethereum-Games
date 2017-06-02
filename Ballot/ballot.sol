@@ -1,4 +1,5 @@
 contract Ballot {
+
     struct Voter {
         uint weight;
         bool voted;
@@ -13,21 +14,21 @@ contract Ballot {
     mapping(address => Voter) voters;
     Proposal[] proposals;
 
-    // Create a new ballot with $(_numProposals) different proposals.
+    /// Create a new ballot with $(_numProposals) different proposals.
     function Ballot(uint8 _numProposals) {
         chairperson = msg.sender;
         voters[chairperson].weight = 1;
         proposals.length = _numProposals;
     }
 
-    // Give $(voter) the right to vote on this ballot.
-    // May only be called by $(chairperson).
+    /// Give $(voter) the right to vote on this ballot.
+    /// May only be called by $(chairperson).
     function giveRightToVote(address voter) {
         if (msg.sender != chairperson || voters[voter].voted) return;
         voters[voter].weight = 1;
     }
 
-    // Delegate your vote to the voter $(to).
+    /// Delegate your vote to the voter $(to).
     function delegate(address to) {
         Voter sender = voters[msg.sender]; // assigns reference
         if (sender.voted) return;
@@ -43,7 +44,7 @@ contract Ballot {
             delegate.weight += sender.weight;
     }
 
-    // Give a single vote to proposal $(proposal).
+    /// Give a single vote to proposal $(proposal).
     function vote(uint8 proposal) {
         Voter sender = voters[msg.sender];
         if (sender.voted || proposal >= proposals.length) return;
@@ -54,12 +55,10 @@ contract Ballot {
 
     function winningProposal() constant returns (uint8 winningProposal) {
         uint256 winningVoteCount = 0;
-        for (uint8 proposal = 0; proposal < proposals.length; proposal++) {
+        for (uint8 proposal = 0; proposal < proposals.length; proposal++)
             if (proposals[proposal].voteCount > winningVoteCount) {
                 winningVoteCount = proposals[proposal].voteCount;
                 winningProposal = proposal;
             }
-            ++proposal;
-        }
     }
 }
